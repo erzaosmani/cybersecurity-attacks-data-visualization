@@ -23,3 +23,12 @@ print(missing_values)
 #Check for duplicates
 print("Duplicate values: ")
 print(df.duplicated().sum())
+
+#Integration of field Packet Efficiency
+df['Payload Length'] = df['Payload Data'].apply(len)
+df['Packet Efficiency'] = df['Packet Length'] / df['Payload Length']
+
+#Aggregation of all attack types
+aggregated_data = df.groupby('Attack Type').size()
+print("Aggregated data (count of each attack type):")
+print(aggregated_data)
