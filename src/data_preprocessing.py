@@ -14,3 +14,12 @@ print(f"Number of fields: {field_count}")
 print("Summary statistics for numeric columns:")
 print(df.describe())
 
+#Check for missing values
+missing_values = df.isnull().sum()
+missing_values = missing_values[missing_values > 0]
+print("Missing values in columns:")
+print(missing_values)
+
+#Check for duplicates
+print("Duplicate values: ")
+print(df.duplicated().sum())
