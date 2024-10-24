@@ -52,4 +52,5 @@ csv_data["Firewall Logs"] = csv_data["Firewall Logs"].fillna(firewall_logs)
 ids_ips_alerts = csv_data["IDS/IPS Alerts"].mode()[0]
 csv_data["IDS/IPS Alerts"] = csv_data["IDS/IPS Alerts"].fillna(ids_ips_alerts)
 
-
+#Cleaned data csv file without missing values
+csv_data.to_csv('cleaned_data.csv', index=False)
