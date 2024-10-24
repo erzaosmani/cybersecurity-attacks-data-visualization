@@ -37,4 +37,5 @@ print(aggregated_data)
 data_portion = csv_data.sample(frac=0.1)
 
 
-
+#Cleaned data csv file without missing values
+csv_data.to_csv('cleaned_data.csv', index=False)
