@@ -36,5 +36,20 @@ print(aggregated_data)
 #Sampling random data
 data_portion = csv_data.sample(frac=0.1)
 
+#Filling missing values (String type)
+malware = csv_data["Malware Indicators"].mode()[0]
+csv_data["Malware Indicators"] = csv_data["Malware Indicators"].fillna(malware)
+
+alerts_warnings = csv_data["Alerts/Warnings"].mode()[0]
+csv_data["Alerts/Warnings"] = csv_data["Alerts/Warnings"].fillna(alerts_warnings)
+
+proxy_information = csv_data["Proxy Information"].mode()[0]
+csv_data["Proxy Information"] = csv_data["Proxy Information"].fillna(proxy_information)
+
+firewall_logs = csv_data["Firewall Logs"].mode()[0]
+csv_data["Firewall Logs"] = csv_data["Firewall Logs"].fillna(firewall_logs)
+
+ids_ips_alerts = csv_data["IDS/IPS Alerts"].mode()[0]
+csv_data["IDS/IPS Alerts"] = csv_data["IDS/IPS Alerts"].fillna(ids_ips_alerts)
 
 
