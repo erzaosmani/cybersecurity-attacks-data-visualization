@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import KBinsDiscretizer, Binarizer, StandardScaler
 
 csv_data = pd.read_csv("cybersecurity_attacks.csv")
 
@@ -51,6 +52,30 @@ csv_data["Firewall Logs"] = csv_data["Firewall Logs"].fillna(firewall_logs)
 
 ids_ips_alerts = csv_data["IDS/IPS Alerts"].mode()[0]
 csv_data["IDS/IPS Alerts"] = csv_data["IDS/IPS Alerts"].fillna(ids_ips_alerts)
+
+#Discretization of fields
+#Discretization of 'Packet Length'
+discretizer = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='uniform')
+csv_data['Packet Length Disc'] = discretizer.fit_transform(csv_data[['Packet Length']])
+
+#Discretization of 'Anomaly Scores'
+discretizer = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='uniform')
+csv_data['Anomaly Scores Disc'] = discretizer.fit_transform(csv_data[['Anomaly Scores']])
+
+#Binarization of fields
+#Binarization of 'Packet Length'
+binarizer = Binarizer(threshold=float(csv_data['Packet Length'].mean()))
+csv_data['Packet Length Bin'] = binarizer.fit_transform(csv_data[['Packet Length']])
+
+#Binarization of 'Anomaly Scores'
+mean_value = csv_data['Anomaly Scores'].mean()
+binarizer = Binarizer(threshold=float(mean_value))
+csv_data['Anomaly Scores Bin'] = binarizer.fit_transform(csv_data[['Anomaly Scores']])
+
+#Transformation
+scaler = StandardScaler()
+numerical_cols = csv_data.select_dtypes(include=['int64', 'float64']).columns
+csv_data[numerical_cols] = scaler.fit_transform(csv_data[numerical_cols])
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
