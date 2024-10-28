@@ -53,31 +53,61 @@ csv_data["Firewall Logs"] = csv_data["Firewall Logs"].fillna(firewall_logs)
 ids_ips_alerts = csv_data["IDS/IPS Alerts"].mode()[0]
 csv_data["IDS/IPS Alerts"] = csv_data["IDS/IPS Alerts"].fillna(ids_ips_alerts)
 
-# Discretize 'Source Port' with meaningful labels
+# Discretize 'Source Port' labels
 csv_data['Source Port Binned'] = pd.cut(csv_data['Source Port'], 
                                     bins=[0, 1023, 49151, 65535], 
                                     labels=["System", "User", "Dynamic/Private"])
 
-# Discretize 'Destination Port' with meaningful labels
+# Discretize 'Destination Port' with labels
 csv_data['Destination Port Binned'] = pd.cut(csv_data['Destination Port'], 
                                          bins=[0, 1023, 49151, 65535], 
                                          labels=["System", "Registered", "Dynamic/Private"])
 
-# Discretize 'Packet Length' with descriptive labels
+# Discretize 'Packet Length' with labels
 csv_data['Packet Length Binned'] = pd.cut(csv_data['Packet Length'], 
                                       bins=3, 
                                       labels=["Small", "Medium", "Large"])
 
-# Discretize 'Anomaly Scores' with severity labels
+# Discretize 'Anomaly Scores' with labels
 csv_data['Anomaly Scores Binned'] = pd.cut(csv_data['Anomaly Scores'], 
                                        bins=3, 
                                        labels=["Normal", "Suspicious", "Critical"])
 
-# Display the first few rows to check the new binned columns
-print(csv_data[['Source Port', 'Source Port Binned', 
-            'Destination Port', 'Destination Port Binned', 
-            'Packet Length', 'Packet Length Binned', 
-            'Anomaly Scores', 'Anomaly Scores Binned']].head())
+# # Display the first rows of discretized columns
+# print(csv_data[['Source Port', 'Source Port Binned', 
+#             'Destination Port', 'Destination Port Binned', 
+#             'Packet Length', 'Packet Length Binned', 
+#             'Anomaly Scores', 'Anomaly Scores Binned']].head())
+
+source_port = csv_data['Source Port'].values.reshape(-1, 1)
+destination_port = csv_data['Destination Port'].values.reshape(-1, 1)
+packet_length = csv_data['Packet Length'].values.reshape(-1, 1)
+anomaly_scores = csv_data['Anomaly Scores'].values.reshape(-1, 1)
+
+# # Display of the original values of binarizated columns
+# print("\nOriginal Source Port data values:\n", source_port.flatten())
+# print("\nOriginal Destination Port data values:\n", destination_port.flatten())
+# print("\nOriginal Packet Length data values:\n", packet_length.flatten())
+# print("\nOriginal Anomaly Scores data values:\n", anomaly_scores.flatten())
+
+# Custom threshhold and binarization
+binarizer_source_port = Binarizer(threshold=1023)
+csv_data['Source Port Bin'] = binarizer_source_port.fit_transform(source_port)
+
+binarizer_destination_port = Binarizer(threshold=49151)
+csv_data['Destination Port Bin'] = binarizer_destination_port.fit_transform(destination_port)
+
+binarizer_packet_length = Binarizer(threshold=500)
+csv_data['Packet Length Bin'] = binarizer_packet_length.fit_transform(packet_length)
+
+binarizer_anomaly_scores = Binarizer(threshold=0.5)
+csv_data['Anomaly Scores Bin'] = binarizer_anomaly_scores.fit_transform(anomaly_scores)
+
+# # Displaying result of binarization
+# print("\nBinarized Source Port:\n", csv_data['Source Port Bin'].values)
+# print("\nBinarized Destination Port:\n", csv_data['Destination Port Bin'].values)
+# print("\nBinarized Packet Length:\n", csv_data['Packet Length Bin'].values)
+# print("\nBinarized Anomaly Scores:\n", csv_data['Anomaly Scores Bin'].values)
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
