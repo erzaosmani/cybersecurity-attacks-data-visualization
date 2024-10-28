@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.preprocessing import KBinsDiscretizer, Binarizer, StandardScaler
+from sklearn.preprocessing import Binarizer, StandardScaler,MinMaxScaler
 
 csv_data = pd.read_csv("cybersecurity_attacks.csv")
 
@@ -97,7 +97,7 @@ csv_data['Source Port Bin'] = binarizer_source_port.fit_transform(source_port)
 binarizer_destination_port = Binarizer(threshold=49151)
 csv_data['Destination Port Bin'] = binarizer_destination_port.fit_transform(destination_port)
 
-binarizer_packet_length = Binarizer(threshold=500)
+binarizer_packet_length = Binarizer(threshold=781)
 csv_data['Packet Length Bin'] = binarizer_packet_length.fit_transform(packet_length)
 
 binarizer_anomaly_scores = Binarizer(threshold=0.5)
@@ -108,6 +108,22 @@ csv_data['Anomaly Scores Bin'] = binarizer_anomaly_scores.fit_transform(anomaly_
 # print("\nBinarized Destination Port:\n", csv_data['Destination Port Bin'].values)
 # print("\nBinarized Packet Length:\n", csv_data['Packet Length Bin'].values)
 # print("\nBinarized Anomaly Scores:\n", csv_data['Anomaly Scores Bin'].values)
+
+#Transformation
+min_max_scaler = MinMaxScaler()
+standard_scaler = StandardScaler()
+
+# 1. Min-Max Scaling for Source Port and Destination Port (range 0-1)
+csv_data['Source Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Source Port']])
+csv_data['Destination Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Destination Port']])
+
+# 3. Standardization (z-score normalization) for Anomaly Scores
+csv_data['Anomaly Scores Standardized'] = standard_scaler.fit_transform(csv_data[['Anomaly Scores']])
+
+# Display the first few rows to verify transformations
+#print(csv_data[['Source Port', 'Source Port Scaled',
+            #'Destination Port', 'Destination Port Scaled',
+           # 'Anomaly Scores', 'Anomaly Scores Standardized']].head())
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
