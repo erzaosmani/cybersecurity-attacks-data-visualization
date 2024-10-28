@@ -53,29 +53,31 @@ csv_data["Firewall Logs"] = csv_data["Firewall Logs"].fillna(firewall_logs)
 ids_ips_alerts = csv_data["IDS/IPS Alerts"].mode()[0]
 csv_data["IDS/IPS Alerts"] = csv_data["IDS/IPS Alerts"].fillna(ids_ips_alerts)
 
-#Discretization of fields
-#Discretization of 'Packet Length'
-discretizer = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='uniform')
-csv_data['Packet Length Disc'] = discretizer.fit_transform(csv_data[['Packet Length']])
+# Discretize 'Source Port' with meaningful labels
+csv_data['Source Port Binned'] = pd.cut(csv_data['Source Port'], 
+                                    bins=[0, 1023, 49151, 65535], 
+                                    labels=["System", "User", "Dynamic/Private"])
 
-#Discretization of 'Anomaly Scores'
-discretizer = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='uniform')
-csv_data['Anomaly Scores Disc'] = discretizer.fit_transform(csv_data[['Anomaly Scores']])
+# Discretize 'Destination Port' with meaningful labels
+csv_data['Destination Port Binned'] = pd.cut(csv_data['Destination Port'], 
+                                         bins=[0, 1023, 49151, 65535], 
+                                         labels=["System", "Registered", "Dynamic/Private"])
 
-#Binarization of fields
-#Binarization of 'Packet Length'
-binarizer = Binarizer(threshold=float(csv_data['Packet Length'].mean()))
-csv_data['Packet Length Bin'] = binarizer.fit_transform(csv_data[['Packet Length']])
+# Discretize 'Packet Length' with descriptive labels
+csv_data['Packet Length Binned'] = pd.cut(csv_data['Packet Length'], 
+                                      bins=3, 
+                                      labels=["Small", "Medium", "Large"])
 
-#Binarization of 'Anomaly Scores'
-mean_value = csv_data['Anomaly Scores'].mean()
-binarizer = Binarizer(threshold=float(mean_value))
-csv_data['Anomaly Scores Bin'] = binarizer.fit_transform(csv_data[['Anomaly Scores']])
+# Discretize 'Anomaly Scores' with severity labels
+csv_data['Anomaly Scores Binned'] = pd.cut(csv_data['Anomaly Scores'], 
+                                       bins=3, 
+                                       labels=["Normal", "Suspicious", "Critical"])
 
-#Transformation
-scaler = StandardScaler()
-numerical_cols = csv_data.select_dtypes(include=['int64', 'float64']).columns
-csv_data[numerical_cols] = scaler.fit_transform(csv_data[numerical_cols])
+# Display the first few rows to check the new binned columns
+print(csv_data[['Source Port', 'Source Port Binned', 
+            'Destination Port', 'Destination Port Binned', 
+            'Packet Length', 'Packet Length Binned', 
+            'Anomaly Scores', 'Anomaly Scores Binned']].head())
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
