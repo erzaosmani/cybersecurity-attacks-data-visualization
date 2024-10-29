@@ -79,35 +79,26 @@ csv_data['Anomaly Scores Binned'] = pd.cut(csv_data['Anomaly Scores'],
 #             'Packet Length', 'Packet Length Binned', 
 #             'Anomaly Scores', 'Anomaly Scores Binned']].head())
 
-source_port = csv_data['Source Port'].values.reshape(-1, 1)
-destination_port = csv_data['Destination Port'].values.reshape(-1, 1)
-packet_length = csv_data['Packet Length'].values.reshape(-1, 1)
-anomaly_scores = csv_data['Anomaly Scores'].values.reshape(-1, 1)
+
+
+#2D array for binarized values
+packet_type = csv_data['Packet Type'].values.reshape(-1, 1)
+log_source = csv_data['Log Source'].values.reshape(-1, 1)
 
 # # Display of the original values of binarizated columns
-# print("\nOriginal Source Port data values:\n", source_port.flatten())
-# print("\nOriginal Destination Port data values:\n", destination_port.flatten())
-# print("\nOriginal Packet Length data values:\n", packet_length.flatten())
-# print("\nOriginal Anomaly Scores data values:\n", anomaly_scores.flatten())
+#print("\nOriginal Packet Type data values:\n", packet_type.flatten())
+#print("\nOriginal Log Source data values:\n", log_source.flatten())
 
-# Custom threshhold and binarization
-binarizer_source_port = Binarizer(threshold=1023)
-csv_data['Source Port Bin'] = binarizer_source_port.fit_transform(source_port)
+# Binarize 'Packet Type' field
+csv_data['Packet Type Bin'] = csv_data['Packet Type'].apply(lambda x: 1 if x == "Control" else 0)
 
-binarizer_destination_port = Binarizer(threshold=49151)
-csv_data['Destination Port Bin'] = binarizer_destination_port.fit_transform(destination_port)
+# Binarize 'Log Source' field
+csv_data['Log Source Bin'] = csv_data['Log Source'].apply(lambda x: 1 if x == "Firewall" else 0)
 
-binarizer_packet_length = Binarizer(threshold=781)
-csv_data['Packet Length Bin'] = binarizer_packet_length.fit_transform(packet_length)
+#Displaying result of binarization
+#print("\nBinarized Packet Type:\n", csv_data['Packet Type Bin'].values)
+#print("\nBinarized Log Source:\n", csv_data['Log Source Bin'].values)
 
-binarizer_anomaly_scores = Binarizer(threshold=0.5)
-csv_data['Anomaly Scores Bin'] = binarizer_anomaly_scores.fit_transform(anomaly_scores)
-
-# # Displaying result of binarization
-# print("\nBinarized Source Port:\n", csv_data['Source Port Bin'].values)
-# print("\nBinarized Destination Port:\n", csv_data['Destination Port Bin'].values)
-# print("\nBinarized Packet Length:\n", csv_data['Packet Length Bin'].values)
-# print("\nBinarized Anomaly Scores:\n", csv_data['Anomaly Scores Bin'].values)
 
 #Transformation
 min_max_scaler = MinMaxScaler()
