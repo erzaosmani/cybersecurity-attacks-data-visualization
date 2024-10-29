@@ -101,20 +101,18 @@ csv_data['Log Source Bin'] = csv_data['Log Source'].apply(lambda x: 1 if x == "F
 
 
 #Transformation
-min_max_scaler = MinMaxScaler()
+# min_max_scaler = MinMaxScaler()
 standard_scaler = StandardScaler()
 
 # 1. Min-Max Scaling for Source Port and Destination Port (range 0-1)
-csv_data['Source Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Source Port']])
-csv_data['Destination Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Destination Port']])
+# csv_data['Source Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Source Port']])
+# csv_data['Destination Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Destination Port']])
 
-# 3. Standardization (z-score normalization) for Anomaly Scores
+# 2. Standardization (z-score normalization) for Anomaly Scores
 csv_data['Anomaly Scores Standardized'] = standard_scaler.fit_transform(csv_data[['Anomaly Scores']])
 
 # Display the first few rows to verify transformations
-#print(csv_data[['Source Port', 'Source Port Scaled',
-            #'Destination Port', 'Destination Port Scaled',
-           # 'Anomaly Scores', 'Anomaly Scores Standardized']].head())
+# print(csv_data[['Anomaly Scores', 'Anomaly Scores Standardized']].head())
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
