@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
-from sklearn.preprocessing import Binarizer, StandardScaler,MinMaxScaler
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler,MinMaxScaler
 
 csv_data = pd.read_csv("cybersecurity_attacks.csv")
 
@@ -111,8 +113,34 @@ standard_scaler = StandardScaler()
 # 2. Standardization (z-score normalization) for Anomaly Scores
 csv_data['Anomaly Scores Standardized'] = standard_scaler.fit_transform(csv_data[['Anomaly Scores']])
 
-# Display the first few rows to verify transformations
-# print(csv_data[['Anomaly Scores', 'Anomaly Scores Standardized']].head())
+pd.set_option('display.max_rows', None)   # Display all rows
+pd.set_option('display.max_colwidth', None) # Display entire column width
+pd.set_option('display.max_columns', None)  # Display all columns
+
+numerical_cols = ['Source Port', 'Destination Port', 'Packet Length',
+                  'Payload Length', 'Packet Efficiency', 'Anomaly Scores']
+
+scaled_data = standard_scaler.fit_transform(csv_data[numerical_cols])
+
+pca = PCA(n_components=2)
+pca.fit(scaled_data)
+
+# Extract PCA components and loadings
+pca_components_df = pd.DataFrame(np.round(pca.components_, 4),
+                                 columns=numerical_cols,
+                                 index=[f'PC{i + 1}' for i in range(pca.n_components_)])
+
+# Display the PCA components with feature weights
+print("PCA Components with feature weights:")
+print(pca_components_df)
+
+# Get the top features contributing to each principal component
+for i in range(pca.n_components_):
+    print(f"\nTop features for PC{i + 1}:")
+    sorted_features = pca_components_df.iloc[i].sort_values(ascending=False)
+    print(sorted_features.head(3))
+
+print("Explained Variance Ratio:", pca.explained_variance_ratio_)
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
