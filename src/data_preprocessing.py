@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_selection import chi2
 
 csv_data = pd.read_csv("cybersecurity_attacks.csv")
 
@@ -141,6 +143,29 @@ for i in range(pca.n_components_):
     print(sorted_features.head(3))
 
 print("Explained Variance Ratio:", pca.explained_variance_ratio_)
+print()
+
+#Feature Selection using chi-square
+target = 'Attack Type'
+features = ['Action Taken', 'Severity Level', 'Traffic Type', 'Protocol', 'Attack Signature', 'Geo-location Data', 'Device Information']
+
+label_encoders = {}
+for col in [target] + features:
+    le = LabelEncoder()
+    csv_data[col] = le.fit_transform(csv_data[col].astype(str))
+    label_encoders[col] = le
+
+X = csv_data[features]
+y = csv_data[target]
+
+chi2_stats, _ = chi2(X, y)
+
+
+print("Chi-Square Test Results (Target: 'Attack Type'):\n")
+for feature, chi2_stat in zip(features, chi2_stats):
+    print(f"Feature: {feature}")
+    print(f"  Chi2 Statistic: {chi2_stat:.4f}")
+
 
 #Cleaned data csv file without missing values
 csv_data.to_csv('cleaned_data.csv', index=False)
