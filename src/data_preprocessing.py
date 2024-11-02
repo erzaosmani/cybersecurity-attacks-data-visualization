@@ -48,8 +48,7 @@ csv_data["Malware Indicators"] = csv_data["Malware Indicators"].fillna(malware)
 alerts_warnings = csv_data["Alerts/Warnings"].mode()[0]
 csv_data["Alerts/Warnings"] = csv_data["Alerts/Warnings"].fillna(alerts_warnings)
 
-proxy_information = csv_data["Proxy Information"].mode()[0]
-csv_data["Proxy Information"] = csv_data["Proxy Information"].fillna(proxy_information)
+csv_data["Proxy Information"] = csv_data["Proxy Information"].fillna("No Proxy Information")
 
 firewall_logs = csv_data["Firewall Logs"].mode()[0]
 csv_data["Firewall Logs"] = csv_data["Firewall Logs"].fillna(firewall_logs)
