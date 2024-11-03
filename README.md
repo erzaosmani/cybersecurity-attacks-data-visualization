@@ -127,15 +127,12 @@ This README outlines the steps taken and their implementation in the provided Py
       csv_data['Log Source Bin'] = csv_data['Log Source'].apply(lambda x: 1 if x == "Firewall" else 0)
       ```  
 
-    - z-score normalization in the field `Anomaly Scores`, 0 if below average, 1 if above average.
-    - Standard Scaler - calculated the mean and the standard deviation of the original `Anomaly Scores` field.
-       ```bash
-       standard_scaler = StandardScaler()
-       
-       csv_data['Anomaly Scores Standardized'] = standard_scaler.fit_transform(csv_data[['Anomaly Scores']])
-      ```  
-    - Dimensionality reduction - We applied Principal Component Analysis (PCA) to reduce the dataset to two principal components, capturing the most important features while simplifying the data structure
+    - Dimensionality reduction - We applied Principal Component Analysis (PCA) to reduce the dataset to two principal components, capturing the most important features while simplifying the data structure. The numerical columns are also standardized.
       ```bash
+      numerical_cols = ['Source Port', 'Destination Port', 'Packet Length',
+                  'Payload Length', 'Packet Efficiency', 'Anomaly Scores']
+
+      scaled_data = standard_scaler.fit_transform(csv_data[numerical_cols])
       pca = PCA(n_components=2)
       pca.fit(scaled_data)
 
@@ -160,7 +157,8 @@ This README outlines the steps taken and their implementation in the provided Py
 
        chi2_stats, _ = chi2(X, y)
       ``` 
-    - Cleaned dataset - After performing all these preprocessing tasks, new fields have been added to our dataset: `Payload Length`,`Packet Efficiency`, `Source Port Binned`, `Destination Port Binned`, `Packet Length Binned`, `Anomaly Scores Binned`, `Source IP Class`, `Destination IP Class`, `Packet Type Bin`, `Log Source Bin`, `Anomaly Scores Standardized`. The dataset has been cleaned and has no missing and duplicate values.
+    - Cleaned dataset - After performing all these preprocessing tasks, new fields have been added to our dataset: `Payload Length`,`Packet Efficiency`, `Source Port Binned`, `Destination Port Binned`, `Packet Length Binned`, `Anomaly Scores Binned`, `Source IP Class`, `Destination IP Class`, `Packet Type Bin`, `Log Source Bin`. The dataset has been cleaned and has no missing and duplicate values.
+    - The new cleaned dataset `cleaned_data.csv` should be located in the directory: `cybersecurity-attacks-data-visualization/src`.
 
 ### Authors
 
