@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import chi2
 
@@ -134,15 +134,7 @@ print()
 
 
 #Transformation
-# min_max_scaler = MinMaxScaler()
 standard_scaler = StandardScaler()
-
-# 1. Min-Max Scaling for Source Port and Destination Port (range 0-1)
-# csv_data['Source Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Source Port']])
-# csv_data['Destination Port Scaled'] = min_max_scaler.fit_transform(csv_data[['Destination Port']])
-
-# 2. Standardization (z-score normalization) for Anomaly Scores
-csv_data['Anomaly Scores Standardized'] = standard_scaler.fit_transform(csv_data[['Anomaly Scores']])
 
 numerical_cols = ['Source Port', 'Destination Port', 'Packet Length',
                   'Payload Length', 'Packet Efficiency', 'Anomaly Scores']
@@ -169,6 +161,9 @@ for i in range(pca.n_components_):
 print("Explained Variance Ratio:", pca.explained_variance_ratio_)
 print()
 
+#Cleaned data csv file without missing values
+csv_data.to_csv('cleaned_data.csv', index=False)
+
 #Feature Selection using chi-square
 target = 'Attack Type'
 features = ['Action Taken', 'Severity Level', 'Traffic Type', 'Protocol', 'Attack Signature', 'Geo-location Data', 'Device Information']
@@ -191,5 +186,3 @@ for feature, chi2_stat in zip(features, chi2_stats):
     print(f"  Chi2 Statistic: {chi2_stat:.4f}")
 print()
 
-#Cleaned data csv file without missing values
-csv_data.to_csv('cleaned_data.csv', index=False)
