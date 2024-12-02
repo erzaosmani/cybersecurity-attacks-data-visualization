@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+from scipy.stats import skew
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
@@ -185,4 +187,29 @@ for feature, chi2_stat in zip(features, chi2_stats):
     print(f"Feature: {feature}")
     print(f"  Chi2 Statistic: {chi2_stat:.4f}")
 print()
+
+# Select numerical columns
+numerical_columns = ['Source Port', 'Destination Port', 'Packet Length',
+                     'Payload Length', 'Packet Efficiency', 'Anomaly Scores']
+
+# Calculate skewness
+skewness_values = csv_data[numerical_columns].apply(skew)
+
+for col in numerical_columns:
+    plt.figure(figsize=(8, 5))
+    plt.hist(csv_data[col], bins=30, color='skyblue', edgecolor='black', alpha=0.7)
+    plt.axvline(csv_data[col].mean(), color='red', linestyle='--', label='Mean')
+    plt.axvline(csv_data[col].median(), color='orange', linestyle='-', label='Median')
+    plt.title(f"Distribution of {col} with Skewness: {skew(csv_data[col]):.2f}", fontsize=14)
+    plt.xlabel(col, fontsize=12)
+    plt.ylabel("Frequency", fontsize=12)
+    plt.legend()
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
+
+
+print("Skewness of Numerical Columns:")
+print(skewness_values)
+
+
 
