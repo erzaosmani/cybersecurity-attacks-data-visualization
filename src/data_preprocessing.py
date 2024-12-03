@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from scipy.stats import skew
+from scipy.stats import skew, zscore
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
@@ -188,14 +188,10 @@ for feature, chi2_stat in zip(features, chi2_stats):
     print(f"  Chi2 Statistic: {chi2_stat:.4f}")
 print()
 
-# Select numerical columns
-numerical_columns = ['Source Port', 'Destination Port', 'Packet Length',
-                     'Payload Length', 'Packet Efficiency', 'Anomaly Scores']
-
 # Calculate skewness
-skewness_values = csv_data[numerical_columns].apply(skew)
+skewness_values = csv_data[numerical_cols].apply(skew)
 
-for col in numerical_columns:
+for col in numerical_cols:
     plt.figure(figsize=(8, 5))
     plt.hist(csv_data[col], bins=30, color='skyblue', edgecolor='black', alpha=0.7)
     plt.axvline(csv_data[col].mean(), color='red', linestyle='--', label='Mean')
@@ -207,9 +203,31 @@ for col in numerical_columns:
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
-
 print("Skewness of Numerical Columns:")
 print(skewness_values)
 
+numerical_columns = ['Payload Length', 'Packet Efficiency']
 
+z_scores = csv_data[numerical_columns].apply(zscore)
 
+threshold_z = 2
+outlier_indices = np.where(z_scores > threshold_z)[0]
+
+no_outliers = csv_data.drop(outlier_indices)
+
+new_skewness = no_outliers[numerical_columns].apply(skew)
+
+print("\nSkewness after removing outliers:")
+print(new_skewness)
+
+for col in numerical_columns:
+    plt.figure(figsize=(8, 5))
+    plt.hist(no_outliers[col], bins=30, color='skyblue', edgecolor='black', alpha=0.7)
+    plt.axvline(no_outliers[col].mean(), color='red', linestyle='--', label='Mean')
+    plt.axvline(no_outliers[col].median(), color='orange', linestyle='-', label='Median')
+    plt.title(f"Distribution of {col} with Skewness: {skew(no_outliers[col]):.2f}", fontsize=14)
+    plt.xlabel(col, fontsize=12)
+    plt.ylabel("Frequency", fontsize=12)
+    plt.legend()
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
