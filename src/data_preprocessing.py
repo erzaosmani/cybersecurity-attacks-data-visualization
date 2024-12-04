@@ -231,3 +231,25 @@ for col in numerical_columns:
     plt.legend()
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
+
+correlation_matrix = csv_data[numerical_cols].corr()
+
+# Plot the correlation matrix using Matplotlib
+plt.figure(figsize=(10, 8))
+plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='none')
+plt.colorbar(label='Correlation Coefficient')
+
+# Add labels to the axes
+plt.xticks(range(len(numerical_cols)), numerical_cols, rotation=45, ha="right")
+plt.yticks(range(len(numerical_cols)), numerical_cols)
+
+# Add text annotations
+for i in range(len(numerical_cols)):
+    for j in range(len(numerical_cols)):
+        plt.text(j, i, f"{correlation_matrix.iloc[i, j]:.2f}",
+                 ha='center', va='center', color='black')
+
+plt.title("Correlation Matrix of Numerical Features", fontsize=16)
+plt.tight_layout()
+plt.show()
+
