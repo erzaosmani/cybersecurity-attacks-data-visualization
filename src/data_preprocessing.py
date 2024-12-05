@@ -163,30 +163,8 @@ for i in range(pca.n_components_):
 print("Explained Variance Ratio:", pca.explained_variance_ratio_)
 print()
 
-#Cleaned data csv file without missing values
-csv_data.to_csv('cleaned_data.csv', index=False)
-
-#Feature Selection using chi-square
-target = 'Attack Type'
-features = ['Action Taken', 'Severity Level', 'Traffic Type', 'Protocol', 'Attack Signature', 'Geo-location Data', 'Device Information']
-
-label_encoders = {}
-for col in [target] + features:
-    le = LabelEncoder()
-    csv_data[col] = le.fit_transform(csv_data[col].astype(str))
-    label_encoders[col] = le
-
-X = csv_data[features]
-y = csv_data[target]
-
-chi2_stats, _ = chi2(X, y)
 
 
-print("Chi-Square Test Results (Target: 'Attack Type'):\n")
-for feature, chi2_stat in zip(features, chi2_stats):
-    print(f"Feature: {feature}")
-    print(f"  Chi2 Statistic: {chi2_stat:.4f}")
-print()
 
 # Calculate skewness
 skewness_values = csv_data[numerical_cols].apply(skew)
@@ -214,6 +192,32 @@ threshold_z = 2
 outlier_indices = np.where(z_scores > threshold_z)[0]
 
 no_outliers = csv_data.drop(outlier_indices)
+
+#Cleaned data csv file without missing values
+no_outliers.to_csv('cleaned_data.csv', index=False)
+
+#Feature Selection using chi-square
+target = 'Attack Type'
+features = ['Action Taken', 'Severity Level', 'Traffic Type', 'Protocol', 'Attack Signature', 'Geo-location Data', 'Device Information']
+
+label_encoders = {}
+for col in [target] + features:
+    le = LabelEncoder()
+    csv_data[col] = le.fit_transform(csv_data[col].astype(str))
+    label_encoders[col] = le
+
+X = csv_data[features]
+y = csv_data[target]
+
+chi2_stats, _ = chi2(X, y)
+
+
+print("Chi-Square Test Results (Target: 'Attack Type'):\n")
+for feature, chi2_stat in zip(features, chi2_stats):
+    print(f"Feature: {feature}")
+    print(f"  Chi2 Statistic: {chi2_stat:.4f}")
+print()
+
 
 new_skewness = no_outliers[numerical_columns].apply(skew)
 
