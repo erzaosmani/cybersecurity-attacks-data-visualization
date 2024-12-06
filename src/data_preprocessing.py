@@ -163,7 +163,18 @@ for i in range(pca.n_components_):
 print("Explained Variance Ratio:", pca.explained_variance_ratio_)
 print()
 
+pca_transformed = pca.fit_transform(scaled_data)
 
+colors = np.random.rand(pca_transformed.shape[0])
+
+plt.figure(figsize=(10, 7))
+plt.scatter(pca_transformed[:, 0], pca_transformed[:, 1], c=colors, cmap='rainbow', s=50, edgecolor='k')
+
+plt.title('PCA Colored Randomly')
+plt.xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.2f}% variance)')
+plt.ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.2f}% variance)')
+plt.grid(True)
+plt.show()
 
 
 # Calculate skewness
